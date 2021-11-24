@@ -24,6 +24,9 @@ import javax.swing.plaf.FontUIResource;
 import java.awt.GridLayout;
 
 public class ClassListSystem {
+
+    private static StudentManager studentmanager = new StudentManager();
+
     public static void main(String[] args) {
         // Instantiating the Frame for Home Menu
         class Frame extends JFrame {
@@ -41,16 +44,17 @@ public class ClassListSystem {
 
         // Creating the Menu and Menu Items
         JMenu menu;
-        JMenuItem op1, op2, op3, op4, op5, op6, op7;
+        JMenuItem op1, op2, op3, op4, op5, op6, op7, op8;
         JMenuBar mb = new JMenuBar();
         menu = new JMenu("Commands Menu");
-        op1 = new JMenuItem("Enter info about a new GraduateStudent");
-        op2 = new JMenuItem("Print out all student info");
-        op3 = new JMenuItem("Print average of student averages, as well as total number of students");
-        op4 = new JMenuItem("Read input file");
-        op5 = new JMenuItem("File Data output");
-        op6 = new JMenuItem("Lookup via a HashMap key");
-        op7 = new JMenuItem("End program");
+        op1 = new JMenuItem("Enter info about a new Student");
+        op2 = new JMenuItem("Enter info about a new Graduate Student");
+        op3 = new JMenuItem("Print out all student info");
+        op4 = new JMenuItem("Print average of student averages, as well as total number of students");
+        op5 = new JMenuItem("Read input file");
+        op6 = new JMenuItem("File Data output");
+        op7 = new JMenuItem("Lookup via a HashMap key");
+        op8 = new JMenuItem("End program");
         menu.add(op1);
         menu.add(op2);
         menu.add(op3);
@@ -67,6 +71,7 @@ public class ClassListSystem {
         op5.setFont(new Font("Arial", Font.BOLD, 16));
         op6.setFont(new Font("Arial", Font.BOLD, 16));
         op7.setFont(new Font("Arial", Font.BOLD, 16));
+        op8.setFont(new Font("Arial", Font.BOLD, 16));
 
         mb.add(menu);
         home.setJMenuBar(mb);
@@ -197,8 +202,6 @@ public class ClassListSystem {
                 display.setFont(new Font("Arial", Font.BOLD, 20));
                 display.setLineWrap(true);
                 display.setWrapStyleWord(true);
-                // display.setBackground(new Color(0xc700ff));
-                // display.setForeground(new Color(0xffffff));
 
                 Border displayborder = new EmptyBorder(25, 25, 25, 25);
                 display.setBorder(displayborder);
@@ -214,11 +217,42 @@ public class ClassListSystem {
                     public void actionPerformed(ActionEvent e) {
                         try {
                             String program = cb.getText().toLowerCase();
-                            int year = Integer.parseInt(t1.getText());
-                            double avggrade = Double.parseDouble(t2.getText());
-                            String lastname = t3.getText().toLowerCase();
+                            if (program.length() == 0) {
+                                String out = "Program cannot be left blank.";
+                                display.setText(out);
+                                display.setEditable(false);
+                            } else {
+                                int year = Integer.parseInt(t1.getText());
+                                String avg = t2.getText();
+                                float avggrade = 0;
+                                if (avg.length() == 0) {
+                                    avggrade = 0.0f;
+                                } else {
+                                    avggrade = Float.parseFloat(avg);
+                                }
+                                String lastname = t3.getText().toLowerCase();
+
+                                try {
+                                    Students studentrecord = new Students(program, year, avggrade, lastname);
+                                    if (studentmanager.checkstudent(program, year, avggrade, lastname) == null) {
+                                        studentmanager.addStudents(studentrecord);
+                                        String out = "Data for the Student added successfully.";
+                                        display.setText(out);
+                                        display.setEditable(false);
+                                    } else {
+                                        String out = "Data for this student already exists.";
+                                        display.setText(out);
+                                        display.setEditable(false);
+                                    }
+                                } catch (Exception e1) {
+                                    String out = e1.getMessage();
+                                    display.setText(out);
+                                    display.setEditable(false);
+                                }
+                            }
+
                         } catch (Exception error) {
-                            String out = "Something Went Wrong, Please Try Again.\n\nPlease make sure that\n1)You have not left Last Name, Year, or Program fields Blank\n2)You have entered a Number for Average grade and not a string.\n3)You have entered an Integer Number for Year and not a string.";
+                            String out = "Something Went Wrong, Please Try Again.\n\nPlease make sure that\n1)You have not left Last Name, Year, or Program fields Blank\n2)You have entered a Number for Average grade and not a string and it is between 0 and 100 (inclusive) only.\n3)You have entered an Integer Number for Year and not a string.";
                             display.setText(out);
                             display.setEditable(false);
                         }
@@ -249,7 +283,210 @@ public class ClassListSystem {
             }
         });
 
-        op7.addActionListener(new ActionListener() {
+        op2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                enterinfogradstud.getContentPane().removeAll();
+                enterinfogradstud.repaint();
+                enterinfogradstud.setTitle("Enter Graduate Student Info");
+                enterinfogradstud.setJMenuBar(mb);
+
+                // Creating Panels for Displaying Components
+                JPanel actionpanel = new JPanel();
+                actionpanel.setLayout(new GridLayout(1, 2, 16, 16));
+                actionpanel.setBackground(new Color(0x222222));
+                actionpanel.setBounds(40, 80, 200, 200);
+
+                // Panel for input fields
+                JPanel inputs = new JPanel();
+                inputs.setLayout(new FlowLayout(FlowLayout.CENTER));
+                inputs.setBackground(new Color(0x222222));
+                Border inputborder = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputborder);
+
+                JLabel buyhead = new JLabel("Enter Graduate Student Info");
+                buyhead.setFont(new Font("Verdana", Font.BOLD, 17));
+                buyhead.setForeground(new Color(0xc700ff));
+                Border inputhead = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead);
+                inputs.add(buyhead);
+
+                // Input for Program
+                JLabel program = new JLabel("Program : ");
+                program.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                program.setForeground(new Color(0xffffff));
+                inputs.add(program);
+                JTextField cb = new JTextField(10);
+                cb.setFont(new Font("Arial", Font.BOLD, 18));
+                inputs.add(cb);
+
+                // Input for Year
+                JLabel year = new JLabel("Year : ");
+                year.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                year.setForeground(new Color(0xffffff));
+                inputs.add(year);
+                JTextField t1 = new JTextField(10);
+                t1.setFont(new Font("Arial", Font.BOLD, 18));
+                inputs.add(t1);
+
+                // Input for Average Grade
+                JLabel avggrade = new JLabel("Average Grade : ");
+                avggrade.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                avggrade.setForeground(new Color(0xffffff));
+                inputs.add(avggrade);
+                JTextField t2 = new JTextField(5);
+                t2.setFont(new Font("Arial", Font.BOLD, 16));
+                inputs.add(t2);
+
+                // Input for Supervisor Name
+                JLabel supname = new JLabel("Supervisor Name : ");
+                supname.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                supname.setForeground(new Color(0xffffff));
+                inputs.add(supname);
+                JTextField t3 = new JTextField(6);
+                t3.setFont(new Font("Arial", Font.BOLD, 16));
+                inputs.add(t3);
+
+                // Input for isPHD
+                JLabel isphd = new JLabel("is student a PHD? : ");
+                isphd.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                isphd.setForeground(new Color(0xffffff));
+                inputs.add(isphd);
+                String[] choices = { "Yes", "No" };
+                final JComboBox<String> t4 = new JComboBox<String>(choices);
+                t4.setFont(new Font("Arial", Font.BOLD, 16));
+                inputs.add(t4);
+
+                // Input for Undaergraduate School name
+                JLabel ugname = new JLabel("Undergraduate School: ");
+                ugname.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                ugname.setForeground(new Color(0xffffff));
+                inputs.add(ugname);
+                JTextField t5 = new JTextField(5);
+                t5.setFont(new Font("Arial", Font.BOLD, 16));
+                inputs.add(t5);
+
+                // Input for Last Name
+                JLabel lname = new JLabel("Last Name : ");
+                lname.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                lname.setForeground(new Color(0xffffff));
+                inputs.add(lname);
+                JTextField t6 = new JTextField(6);
+                t6.setFont(new Font("Arial", Font.BOLD, 16));
+                inputs.add(t6);
+
+                // Panel for buttons
+                JPanel btns = new JPanel();
+                btns.setLayout(new FlowLayout(FlowLayout.CENTER));
+                btns.setBackground(new Color(0x222222));
+                Border btnborder = new EmptyBorder(60, 50, 50, 50);
+                btns.setBorder(btnborder);
+
+                JButton reset = new JButton("Reset");
+                JButton buyinv = new JButton("Add");
+
+                reset.setFocusable(false);
+                buyinv.setFocusable(false);
+
+                // Styling the Buttons
+                reset.setBackground(new Color(0xc700ff));
+                reset.setForeground(new Color(0xffffff));
+                buyinv.setBackground(new Color(0xc700ff));
+                buyinv.setForeground(new Color(0xffffff));
+                reset.setFont(new Font("Arial", Font.BOLD, 30));
+                buyinv.setFont(new Font("Arial", Font.BOLD, 30));
+                reset.setPreferredSize(new Dimension(140, 50));
+                btns.add(reset);
+                buyinv.setPreferredSize(new Dimension(140, 50));
+                btns.add(buyinv);
+
+                actionpanel.add(inputs);
+                actionpanel.add(btns);
+
+                // Panel for displaying the results
+                JPanel msgpanel = new JPanel();
+                msgpanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                msgpanel.setBackground(new Color(0xffffff));
+                msgpanel.setBounds(40, 80, 200, 200);
+
+                JLabel gainh = new JLabel("Messages : ");
+                gainh.setFont(new Font("Sans-Serif", Font.BOLD, 20));
+                gainh.setForeground(new Color(0xc700ff));
+                Border gaint = new EmptyBorder(10, 10, 10, 10);
+                gainh.setBorder(gaint);
+
+                // Initialising the Display textarea
+                JTextArea display = new JTextArea(5, 30);
+                display.setFont(new Font("Arial", Font.BOLD, 20));
+                display.setLineWrap(true);
+                display.setWrapStyleWord(true);
+
+                Border displayborder = new EmptyBorder(25, 25, 25, 25);
+                display.setBorder(displayborder);
+                JScrollPane scroll = new JScrollPane(display);
+                scroll.setForeground(new Color(0xc700ff));
+                scroll.setOpaque(false);
+                scroll.setBorder(null);
+                display.setEditable(false);
+
+                msgpanel.add(gainh);
+                msgpanel.add(scroll);
+
+                buyinv.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            String program = cb.getText().toLowerCase();
+                            if (program.length() == 0) {
+                                String out = "Program cannot be left blank.";
+                                display.setText(out);
+                                display.setEditable(false);
+                            } else {
+                                int year = Integer.parseInt(t1.getText());
+                                String avg = t2.getText();
+                                float avggrade = 0;
+                                if (avg.length() == 0) {
+                                    avggrade = 0.0f;
+                                } else {
+                                    avggrade = Float.parseFloat(avg);
+                                }
+                                String lastname = t3.getText().toLowerCase();
+
+
+                            }
+
+                        } catch (Exception error) {
+                            String out = "Something Went Wrong, Please Try Again.\n\nPlease make sure that\n1)You have not left Last Name, Year, Program, or Supervisor Name fields Blank\n2)You have entered a Number for Average grade and not a string and it is between 0 and 100 (inclusive) only.\n3)You have entered an Integer Number for Year and not a string.";
+                            display.setText(out);
+                            display.setEditable(false);
+                        }
+                    }
+                });
+                
+                reset.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        cb.setText("");
+                        t1.setText("");
+                        t2.setText("");
+                        t3.setText("");
+                        display.setText("");
+                    }
+                });
+                // Adding the Panels
+                enterinfogradstud.add(actionpanel);
+                enterinfogradstud.add(msgpanel);
+                enterinfogradstud.setVisible(true);
+
+                // Disposing the Panels
+                home.dispose();
+                enterinfostud.dispose();
+                printinfo.dispose();
+                printavg.dispose();
+                inputfile.dispose();
+                outputfile.dispose();
+                hashmapsearch.dispose();
+            }
+        });
+
+        op8.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 System.exit(0);
             }
