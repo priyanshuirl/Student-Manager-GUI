@@ -633,29 +633,37 @@ public class ClassListSystem {
                         try {
                             int counter = 1;
                             int gcounter = 1;
+                            String out = "";
                             if (studentmanager.getStudents() != null || studentmanager.getGraduateStudents() != null) {
                                 if (studentmanager.getStudents() != null) {
                                     for (Students studentval : studentmanager.getStudents()) {
-                                        System.out.println("Data for Student Number " + counter);
-                                        System.out.println(studentval.toString());
+                                        out += "Data for Student Number " + counter + "\n\n" + studentval.toString()
+                                                + "\n";
                                         counter++;
                                     }
                                 } else {
-                                    System.out.println("\nNo Data found for Undergraduate Students\n");
+                                    out += "No Data found for Undergraduate Students\n";
                                 }
                                 if (studentmanager.getGraduateStudents() != null) {
                                     for (GraduateStudents gradstudval : studentmanager.getGraduateStudents()) {
-                                        System.out.println("Data for Graduate Student Number " + gcounter);
-                                        System.out.println(gradstudval.toString());
+                                        out += "Data for Graduate Student Number " + gcounter + "\n\n"
+                                                + gradstudval.toString() + "\n";
+                                        display.setText(out);
+                                        display.setEditable(false);
                                         gcounter++;
                                     }
+                                } else {
+                                    out += "No Data found for Graduate Students\n";
+                                    display.setText(out);
+                                    display.setEditable(false);
                                 }
                             } else {
-                                System.out.println(
-                                        "\nNo Data found for Any Students. Please consider adding some data first.\n");
+                                out += "No Data found for Any Students. Please consider adding some data first.\n";
+                                display.setText(out);
+                                display.setEditable(false);
                             }
                         } catch (Exception error) {
-                            String out = "Something Went Wrong, Please Try Again.\n\nPlease make sure that\n1)You have not left Last Name, Year, Program, or Supervisor Name fields Blank\n2)You have entered a Number for Average grade and not a string and it is between 0 and 100 (inclusive) only.\n3)You have entered an Integer Number for Year and not a string.";
+                            String out = "Something Went Wrong, Please Try Again.";
                             display.setText(out);
                             display.setEditable(false);
                         }
@@ -677,6 +685,154 @@ public class ClassListSystem {
                 enterinfostud.dispose();
                 enterinfogradstud.dispose();
                 printavg.dispose();
+                inputfile.dispose();
+                outputfile.dispose();
+                hashmapsearch.dispose();
+            }
+        });
+
+        op4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                printavg.getContentPane().removeAll();
+                printavg.repaint();
+                printavg.setTitle("Print out Average Grades and No. of Students");
+                printavg.setJMenuBar(mb);
+
+                // Creating Panels for Displaying Components
+                JPanel actionpanel = new JPanel();
+                actionpanel.setLayout(new GridLayout(1, 2, 16, 16));
+                actionpanel.setBackground(new Color(0x222222));
+                actionpanel.setBounds(40, 80, 200, 200);
+
+                // Panel for input fields
+                JPanel inputs = new JPanel();
+                inputs.setLayout(new FlowLayout(FlowLayout.CENTER));
+                inputs.setBackground(new Color(0x222222));
+                Border inputborder = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputborder);
+
+                JLabel buyhead = new JLabel("Average Grades & No. of Students");
+                buyhead.setFont(new Font("Verdana", Font.BOLD, 14));
+                buyhead.setForeground(new Color(0xc700ff));
+                Border inputhead = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead);
+                inputs.add(buyhead);
+
+                JLabel buyhead2 = new JLabel("Press Print to Output the Data.");
+                buyhead2.setFont(new Font("Verdana", Font.PLAIN, 16));
+                buyhead2.setForeground(new Color(0xffffff));
+                Border inputhead2 = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead2);
+                inputs.add(buyhead2);
+
+                // Panel for buttons
+                JPanel btns = new JPanel();
+                btns.setLayout(new FlowLayout(FlowLayout.CENTER));
+                btns.setBackground(new Color(0x222222));
+                Border btnborder = new EmptyBorder(60, 50, 50, 50);
+                btns.setBorder(btnborder);
+
+                JButton reset = new JButton("Reset");
+                JButton buyinv = new JButton("Print");
+
+                reset.setFocusable(false);
+                buyinv.setFocusable(false);
+
+                // Styling the Buttons
+                reset.setBackground(new Color(0xc700ff));
+                reset.setForeground(new Color(0xffffff));
+                buyinv.setBackground(new Color(0xc700ff));
+                buyinv.setForeground(new Color(0xffffff));
+                reset.setFont(new Font("Arial", Font.BOLD, 30));
+                buyinv.setFont(new Font("Arial", Font.BOLD, 30));
+                reset.setPreferredSize(new Dimension(140, 50));
+                btns.add(reset);
+                buyinv.setPreferredSize(new Dimension(140, 50));
+                btns.add(buyinv);
+
+                actionpanel.add(inputs);
+                actionpanel.add(btns);
+
+                // Panel for displaying the results
+                JPanel msgpanel = new JPanel();
+                msgpanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                msgpanel.setBackground(new Color(0xffffff));
+                msgpanel.setBounds(40, 80, 200, 200);
+
+                JLabel gainh = new JLabel("Messages : ");
+                gainh.setFont(new Font("Sans-Serif", Font.BOLD, 20));
+                gainh.setForeground(new Color(0xc700ff));
+                Border gaint = new EmptyBorder(10, 10, 10, 10);
+                gainh.setBorder(gaint);
+
+                // Initialising the Display textarea
+                JTextArea display = new JTextArea(5, 30);
+                display.setFont(new Font("Arial", Font.BOLD, 20));
+                display.setLineWrap(true);
+                display.setWrapStyleWord(true);
+
+                Border displayborder = new EmptyBorder(25, 25, 25, 25);
+                display.setBorder(displayborder);
+                JScrollPane scroll = new JScrollPane(display);
+                scroll.setForeground(new Color(0xc700ff));
+                scroll.setOpaque(false);
+                scroll.setBorder(null);
+                display.setEditable(false);
+
+                msgpanel.add(gainh);
+                msgpanel.add(scroll);
+
+                buyinv.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String out = "";
+                        try {
+                            float avg = 0.0f;
+                            float avgSum = 0.0f;
+                            int totalStud = 0;
+                            if (studentmanager.getStudents() != null) {
+                                for (Students studval : studentmanager.getStudents()) {
+                                    avgSum += studval.getAverage();
+                                    totalStud++;
+                                }
+                            }
+                            if (studentmanager.getGraduateStudents() != null) {
+                                for (GraduateStudents gradstudval : studentmanager.getGraduateStudents()) {
+                                    avgSum += gradstudval.getAverage();
+                                    totalStud++;
+                                }
+                            }
+                            avg = avgSum / totalStud;
+                            if (totalStud > 0) {
+                                out += "Average of the average grades for all students is : " + avg + "\n\n";
+                                out += "Total number of students is : " + totalStud + "\n";
+                            } else {
+                                out += "No Student data found. Please consider adding some data first";
+                            }
+                            display.setText(out);
+                            display.setEditable(false);
+                        } catch (Exception error) {
+                            out = "Something Went Wrong, Please Try Again.";
+                            display.setText(out);
+                            display.setEditable(false);
+                        }
+                    }
+                });
+
+                reset.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        display.setText("");
+                    }
+                });
+
+                // Adding the Panels
+                printavg.add(actionpanel);
+                printavg.add(msgpanel);
+                printavg.setVisible(true);
+
+                home.dispose();
+                enterinfostud.dispose();
+                enterinfogradstud.dispose();
+                printinfo.dispose();
                 inputfile.dispose();
                 outputfile.dispose();
                 hashmapsearch.dispose();
