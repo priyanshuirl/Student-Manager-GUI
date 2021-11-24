@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.awt.event.ActionEvent;
 import java.awt.Dimension;
@@ -36,9 +37,11 @@ public class ClassListSystem {
 
     private static StudentManager studentmanager = new StudentManager();
     static ArrayList<String> studentfile = new ArrayList<>();
+    static HashMap<String, String> index = new HashMap<String, String>(50);
 
     static Scanner scan = new Scanner(System.in);
     static String line = "";
+    static int hashid = 0;
 
     public static void main(String[] args) {
         // Instantiating the Frame for Home Menu
@@ -64,8 +67,8 @@ public class ClassListSystem {
         op2 = new JMenuItem("Enter info about a new Graduate Student");
         op3 = new JMenuItem("Print out all student info");
         op4 = new JMenuItem("Print average of student averages, as well as total number of students");
-        op5 = new JMenuItem("Read input file");
-        op6 = new JMenuItem("File Data output");
+        op5 = new JMenuItem("Read input file and Load data");
+        op6 = new JMenuItem("Save File Data to output file");
         op7 = new JMenuItem("Lookup via a HashMap key");
         op8 = new JMenuItem("End program");
         menu.add(op1);
@@ -75,6 +78,7 @@ public class ClassListSystem {
         menu.add(op5);
         menu.add(op6);
         menu.add(op7);
+        menu.add(op8);
 
         // Adding styles to the Menu and Menu Items
         op1.setFont(new Font("Arial", Font.BOLD, 16));
@@ -1281,8 +1285,72 @@ public class ClassListSystem {
                     public void actionPerformed(ActionEvent e) {
                         String out = "";
                         try {
-                            String keyword = cb.getText();
-                            
+                            ArrayList<Integer> value = new ArrayList<Integer>();
+                            if (studentmanager.getStudents() != null) {
+                                for (Students studentiter : studentmanager.getStudents()) {
+                                    hashid++;
+                                    studentiter.setHashid(hashid);
+                                    String filestr = studentiter.toFileString();
+                                    String[] tokens = filestr.split("-");
+                                    for (int i = 0; i < tokens.length; i++) {
+                                        for (int j = 0; j < studentmanager.getStudents().size(); j++) {
+                                            index.put(tokens[i].toLowerCase(), String.valueOf(hashid));
+                                            value.clear();
+                                        }
+                                    }
+                                }
+                            }
+                            if (studentmanager.getGraduateStudents() != null) {
+                                for (GraduateStudents gradstudentiter : studentmanager.getGraduateStudents()) {
+                                    hashid++;
+                                    gradstudentiter.setHashid(hashid);
+                                    String filestr = gradstudentiter.toFileString();
+                                    String[] tokens = filestr.split("-");
+                                    for (int i = 0; i < tokens.length; i++) {
+                                        for (int j = 0; j < studentmanager.getGraduateStudents().size(); j++) {
+                                            index.put(tokens[i].toLowerCase(), String.valueOf(hashid));
+                                            value.clear();
+                                        }
+                                    }
+                                }
+                            }
+
+                            String keyw = cb.getText().toLowerCase();
+                            String[] keyar = keyw.split(" ");
+                            ArrayList<Integer> idlist = new ArrayList<>();
+                            for (int k = 0; k < keyar.length; k++) {
+                                String word = keyar[k];
+                                String listval = index.get(word);
+                                if (!(listval == null)) {
+                                    int id = Integer.parseInt(listval);
+                                    idlist.add(id);
+                                }
+                            }
+
+                            if (idlist.size() <= 0) {
+                                out += "\nNo Results found for the keyword " + keyw + "\n";
+                            } else {
+                                out += "\nYour Search results : ";
+                                for (int i = 0; i < idlist.size(); i++) {
+                                    int pt = idlist.get(i);
+                                    for (int j = 0; j < studentmanager.getStudents().size(); j++) {
+                                        if (pt == studentmanager.getStudents().get(j).getHashid()) {
+                                            out += "\n" + studentmanager.getStudents().get(j).toString();
+                                        }
+                                    }
+                                }
+                                for (int i = 0; i < idlist.size(); i++) {
+                                    int pt = idlist.get(i);
+                                    for (int j = 0; j < studentmanager.getGraduateStudents().size(); j++) {
+                                        if (pt == studentmanager.getGraduateStudents().get(j).getHashid()) {
+                                            out += "\n" + studentmanager.getGraduateStudents().get(j).toString();
+                                        }
+                                    }
+                                }
+                            }
+                            display.setText(out);
+                            display.setEditable(false);
+
                         } catch (Exception error) {
                             out += "Something Went Wrong, Please Try Again. Make sure the File exists and is not encrypted or hidden.";
                             display.setText(out);
