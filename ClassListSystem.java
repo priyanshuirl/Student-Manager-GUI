@@ -3,8 +3,12 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.awt.event.ActionEvent;
@@ -1035,6 +1039,277 @@ public class ClassListSystem {
                 enterinfogradstud.dispose();
                 outputfile.dispose();
                 hashmapsearch.dispose();
+            }
+        });
+
+        op6.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                printinfo.getContentPane().removeAll();
+                printinfo.repaint();
+                printinfo.setTitle("Save Data to Output File");
+                printinfo.setJMenuBar(mb);
+
+                // Creating Panels for Displaying Components
+                JPanel actionpanel = new JPanel();
+                actionpanel.setLayout(new GridLayout(1, 2, 16, 16));
+                actionpanel.setBackground(new Color(0x222222));
+                actionpanel.setBounds(40, 80, 200, 200);
+
+                // Panel for input fields
+                JPanel inputs = new JPanel();
+                inputs.setLayout(new FlowLayout(FlowLayout.CENTER));
+                inputs.setBackground(new Color(0x222222));
+                Border inputborder = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputborder);
+
+                JLabel buyhead = new JLabel("Save Data to File");
+                buyhead.setFont(new Font("Verdana", Font.BOLD, 26));
+                buyhead.setForeground(new Color(0xc700ff));
+                Border inputhead = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead);
+                inputs.add(buyhead);
+
+                JLabel buyhead2 = new JLabel("Press Save to save data.");
+                buyhead2.setFont(new Font("Verdana", Font.PLAIN, 20));
+                buyhead2.setForeground(new Color(0xffffff));
+                Border inputhead2 = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead2);
+                inputs.add(buyhead2);
+
+                // Panel for buttons
+                JPanel btns = new JPanel();
+                btns.setLayout(new FlowLayout(FlowLayout.CENTER));
+                btns.setBackground(new Color(0x222222));
+                Border btnborder = new EmptyBorder(60, 50, 50, 50);
+                btns.setBorder(btnborder);
+
+                JButton reset = new JButton("Reset");
+                JButton buyinv = new JButton("Save");
+
+                reset.setFocusable(false);
+                buyinv.setFocusable(false);
+
+                // Styling the Buttons
+                reset.setBackground(new Color(0xc700ff));
+                reset.setForeground(new Color(0xffffff));
+                buyinv.setBackground(new Color(0xc700ff));
+                buyinv.setForeground(new Color(0xffffff));
+                reset.setFont(new Font("Arial", Font.BOLD, 30));
+                buyinv.setFont(new Font("Arial", Font.BOLD, 30));
+                reset.setPreferredSize(new Dimension(140, 50));
+                btns.add(reset);
+                buyinv.setPreferredSize(new Dimension(140, 50));
+                btns.add(buyinv);
+
+                actionpanel.add(inputs);
+                actionpanel.add(btns);
+
+                // Panel for displaying the results
+                JPanel msgpanel = new JPanel();
+                msgpanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                msgpanel.setBackground(new Color(0xffffff));
+                msgpanel.setBounds(40, 80, 200, 200);
+
+                JLabel gainh = new JLabel("Messages : ");
+                gainh.setFont(new Font("Sans-Serif", Font.BOLD, 20));
+                gainh.setForeground(new Color(0xc700ff));
+                Border gaint = new EmptyBorder(10, 10, 10, 10);
+                gainh.setBorder(gaint);
+
+                // Initialising the Display textarea
+                JTextArea display = new JTextArea(5, 30);
+                display.setFont(new Font("Arial", Font.BOLD, 20));
+                display.setLineWrap(true);
+                display.setWrapStyleWord(true);
+
+                Border displayborder = new EmptyBorder(25, 25, 25, 25);
+                display.setBorder(displayborder);
+                JScrollPane scroll = new JScrollPane(display);
+                scroll.setForeground(new Color(0xc700ff));
+                scroll.setOpaque(false);
+                scroll.setBorder(null);
+                display.setEditable(false);
+
+                msgpanel.add(gainh);
+                msgpanel.add(scroll);
+
+                buyinv.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String out = "";
+                        try {
+                            out += "\nSaving into students.txt Output File...\n";
+                            File studentsrecord = new File("students.txt");
+                            try {
+                                FileWriter fw = new FileWriter(studentsrecord);
+                                Writer output = new BufferedWriter(fw);
+                                for (Students studrec : studentmanager.getStudents()) {
+                                    output.write(studrec.toFileString() + "\n");
+                                }
+                                for (GraduateStudents gradstudrec : studentmanager.getGraduateStudents()) {
+                                    output.write(gradstudrec.toFileString() + "\n");
+                                }
+                                output.close();
+                                out += "File Saved Successfully!\n";
+                                display.setText(out);
+                                display.setEditable(false);
+                            } catch (IOException e1) {
+                                out += "\nSomething Went Wrong, Cannot Save to the File.\n";
+                            }
+                        } catch (Exception error) {
+                            out += "Something Went Wrong, Please Try Again.";
+                            display.setText(out);
+                            display.setEditable(false);
+                        }
+                    }
+                });
+
+                reset.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        display.setText("");
+                    }
+                });
+
+                // Adding the Panels
+                printinfo.add(actionpanel);
+                printinfo.add(msgpanel);
+                printinfo.setVisible(true);
+
+                home.dispose();
+                enterinfostud.dispose();
+                enterinfogradstud.dispose();
+                printavg.dispose();
+                inputfile.dispose();
+                outputfile.dispose();
+                hashmapsearch.dispose();
+            }
+        });
+
+        op7.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                hashmapsearch.getContentPane().removeAll();
+                hashmapsearch.repaint();
+                hashmapsearch.setTitle("Search using Hashmap");
+                hashmapsearch.setJMenuBar(mb);
+
+                // Creating Panels for Displaying Components
+                JPanel actionpanel = new JPanel();
+                actionpanel.setLayout(new GridLayout(1, 2, 16, 16));
+                actionpanel.setBackground(new Color(0x222222));
+                actionpanel.setBounds(40, 80, 200, 200);
+
+                // Panel for input fields
+                JPanel inputs = new JPanel();
+                inputs.setLayout(new FlowLayout(FlowLayout.CENTER));
+                inputs.setBackground(new Color(0x222222));
+                Border inputborder = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputborder);
+
+                JLabel buyhead = new JLabel("Search using Hashmap");
+                buyhead.setFont(new Font("Verdana", Font.BOLD, 21));
+                buyhead.setForeground(new Color(0xc700ff));
+                Border inputhead = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead);
+                inputs.add(buyhead);
+
+                // Input for filename
+                JLabel fname = new JLabel("Search keyword : ");
+                fname.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+                fname.setForeground(new Color(0xffffff));
+                inputs.add(fname);
+                JTextField cb = new JTextField(10);
+                cb.setFont(new Font("Arial", Font.BOLD, 18));
+                inputs.add(cb);
+
+                // Panel for buttons
+                JPanel btns = new JPanel();
+                btns.setLayout(new FlowLayout(FlowLayout.CENTER));
+                btns.setBackground(new Color(0x222222));
+                Border btnborder = new EmptyBorder(60, 50, 50, 50);
+                btns.setBorder(btnborder);
+
+                JButton reset = new JButton("Reset");
+                JButton buyinv = new JButton("Search");
+
+                reset.setFocusable(false);
+                buyinv.setFocusable(false);
+
+                // Styling the Buttons
+                reset.setBackground(new Color(0xc700ff));
+                reset.setForeground(new Color(0xffffff));
+                buyinv.setBackground(new Color(0xc700ff));
+                buyinv.setForeground(new Color(0xffffff));
+                reset.setFont(new Font("Arial", Font.BOLD, 30));
+                buyinv.setFont(new Font("Arial", Font.BOLD, 30));
+                reset.setPreferredSize(new Dimension(140, 50));
+                btns.add(reset);
+                buyinv.setPreferredSize(new Dimension(140, 50));
+                btns.add(buyinv);
+
+                actionpanel.add(inputs);
+                actionpanel.add(btns);
+
+                // Panel for displaying the results
+                JPanel msgpanel = new JPanel();
+                msgpanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                msgpanel.setBackground(new Color(0xffffff));
+                msgpanel.setBounds(40, 80, 200, 200);
+
+                JLabel gainh = new JLabel("Search Results : ");
+                gainh.setFont(new Font("Sans-Serif", Font.BOLD, 20));
+                gainh.setForeground(new Color(0xc700ff));
+                Border gaint = new EmptyBorder(10, 10, 10, 10);
+                gainh.setBorder(gaint);
+
+                // Initialising the Display textarea
+                JTextArea display = new JTextArea(5, 30);
+                display.setFont(new Font("Arial", Font.BOLD, 20));
+                display.setLineWrap(true);
+                display.setWrapStyleWord(true);
+
+                Border displayborder = new EmptyBorder(25, 25, 25, 25);
+                display.setBorder(displayborder);
+                JScrollPane scroll = new JScrollPane(display);
+                scroll.setForeground(new Color(0xc700ff));
+                scroll.setOpaque(false);
+                scroll.setBorder(null);
+                display.setEditable(false);
+
+                msgpanel.add(gainh);
+                msgpanel.add(scroll);
+
+                buyinv.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String out = "";
+                        try {
+                            String keyword = cb.getText();
+                            
+                        } catch (Exception error) {
+                            out += "Something Went Wrong, Please Try Again. Make sure the File exists and is not encrypted or hidden.";
+                            display.setText(out);
+                            display.setEditable(false);
+                        }
+                    }
+                });
+
+                reset.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        cb.setText("");
+                        display.setText("");
+                    }
+                });
+                // Adding the Panels
+                hashmapsearch.add(actionpanel);
+                hashmapsearch.add(msgpanel);
+                hashmapsearch.setVisible(true);
+
+                // Disposing the Panels
+                home.dispose();
+                enterinfostud.dispose();
+                printinfo.dispose();
+                printavg.dispose();
+                enterinfogradstud.dispose();
+                inputfile.dispose();
+                outputfile.dispose();
             }
         });
 
