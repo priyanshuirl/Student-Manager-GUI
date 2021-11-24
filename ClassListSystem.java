@@ -224,30 +224,35 @@ public class ClassListSystem {
                             } else {
                                 int year = Integer.parseInt(t1.getText());
                                 String avg = t2.getText();
-                                float avggrade = 0;
+                                float avggrade;
                                 if (avg.length() == 0) {
                                     avggrade = 0.0f;
                                 } else {
                                     avggrade = Float.parseFloat(avg);
                                 }
                                 String lastname = t3.getText().toLowerCase();
-
-                                try {
-                                    Students studentrecord = new Students(program, year, avggrade, lastname);
-                                    if (studentmanager.checkstudent(program, year, avggrade, lastname) == null) {
-                                        studentmanager.addStudents(studentrecord);
-                                        String out = "Data for the Student added successfully.";
-                                        display.setText(out);
-                                        display.setEditable(false);
-                                    } else {
-                                        String out = "Data for this student already exists.";
+                                if (lastname.length() == 0) {
+                                    String out = "Last Name cannot be left blank.";
+                                    display.setText(out);
+                                    display.setEditable(false);
+                                } else {
+                                    try {
+                                        Students studentrecord = new Students(program, year, avggrade, lastname);
+                                        if (studentmanager.checkstudent(program, year, avggrade, lastname) == null) {
+                                            studentmanager.addStudents(studentrecord);
+                                            String out = "Data for the Student added successfully.";
+                                            display.setText(out);
+                                            display.setEditable(false);
+                                        } else {
+                                            String out = "Data for this student already exists.";
+                                            display.setText(out);
+                                            display.setEditable(false);
+                                        }
+                                    } catch (Exception e1) {
+                                        String out = e1.getMessage();
                                         display.setText(out);
                                         display.setEditable(false);
                                     }
-                                } catch (Exception e1) {
-                                    String out = e1.getMessage();
-                                    display.setText(out);
-                                    display.setEditable(false);
                                 }
                             }
 
@@ -442,14 +447,60 @@ public class ClassListSystem {
                             } else {
                                 int year = Integer.parseInt(t1.getText());
                                 String avg = t2.getText();
-                                float avggrade = 0;
+                                float avggrade;
                                 if (avg.length() == 0) {
                                     avggrade = 0.0f;
                                 } else {
                                     avggrade = Float.parseFloat(avg);
                                 }
-                                String lastname = t3.getText().toLowerCase();
+                                String supervisor = t3.getText().toLowerCase();
+                                if (supervisor.length() == 0) {
+                                    String out = "Supervisor Name cannot be left blank.";
+                                    display.setText(out);
+                                    display.setEditable(false);
+                                } else {
 
+                                    int isPHD;
+                                    String phd = t4.getItemAt(t4.getSelectedIndex());
+                                    if (phd.equals("Yes")) {
+                                        isPHD = 1;
+                                    } else {
+                                        isPHD = 0;
+                                    }
+                                    String ugscul = t5.getText().toLowerCase();
+                                    String undergname;
+                                    if (ugscul.length() == 0) {
+                                        undergname = "Not_Mentioned";
+                                    } else {
+                                        undergname = ugscul;
+                                    }
+                                    String lastname = t6.getText().toLowerCase();
+                                    if (lastname.length() == 0) {
+                                        String out = "Last Name cannot be left blank.";
+                                        display.setText(out);
+                                        display.setEditable(false);
+                                    } else {
+                                        try {
+                                            GraduateStudents studentrecord = new GraduateStudents(program, year,
+                                                    avggrade, lastname, supervisor, isPHD, undergname);
+                                            if (studentmanager.checkgradstudent(program, year, avggrade, lastname,
+                                                    supervisor, isPHD, undergname) == null) {
+                                                studentmanager.addGraduateStudents(studentrecord);
+                                                String out = "Data for the Student added successfully.";
+                                                display.setText(out);
+                                                display.setEditable(false);
+                                            } else {
+                                                String out = "Data for this student already exists.";
+                                                display.setText(out);
+                                                display.setEditable(false);
+                                            }
+                                        } catch (Exception e1) {
+                                            String out = e1.getMessage();
+                                            display.setText(out);
+                                            display.setEditable(false);
+                                        }
+                                    }
+                                }
 
                             }
 
@@ -460,7 +511,7 @@ public class ClassListSystem {
                         }
                     }
                 });
-                
+
                 reset.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         cb.setText("");
@@ -479,6 +530,152 @@ public class ClassListSystem {
                 home.dispose();
                 enterinfostud.dispose();
                 printinfo.dispose();
+                printavg.dispose();
+                inputfile.dispose();
+                outputfile.dispose();
+                hashmapsearch.dispose();
+            }
+        });
+
+        op3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                printinfo.getContentPane().removeAll();
+                printinfo.repaint();
+                printinfo.setTitle("Print out all Student Info");
+                printinfo.setJMenuBar(mb);
+
+                // Creating Panels for Displaying Components
+                JPanel actionpanel = new JPanel();
+                actionpanel.setLayout(new GridLayout(1, 2, 16, 16));
+                actionpanel.setBackground(new Color(0x222222));
+                actionpanel.setBounds(40, 80, 200, 200);
+
+                // Panel for input fields
+                JPanel inputs = new JPanel();
+                inputs.setLayout(new FlowLayout(FlowLayout.CENTER));
+                inputs.setBackground(new Color(0x222222));
+                Border inputborder = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputborder);
+
+                JLabel buyhead = new JLabel("All Student Data");
+                buyhead.setFont(new Font("Verdana", Font.BOLD, 26));
+                buyhead.setForeground(new Color(0xc700ff));
+                Border inputhead = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead);
+                inputs.add(buyhead);
+
+                JLabel buyhead2 = new JLabel("Press Print to Output data.");
+                buyhead2.setFont(new Font("Verdana", Font.PLAIN, 20));
+                buyhead2.setForeground(new Color(0xffffff));
+                Border inputhead2 = new EmptyBorder(10, 10, 10, 10);
+                inputs.setBorder(inputhead2);
+                inputs.add(buyhead2);
+
+                // Panel for buttons
+                JPanel btns = new JPanel();
+                btns.setLayout(new FlowLayout(FlowLayout.CENTER));
+                btns.setBackground(new Color(0x222222));
+                Border btnborder = new EmptyBorder(60, 50, 50, 50);
+                btns.setBorder(btnborder);
+
+                JButton reset = new JButton("Reset");
+                JButton buyinv = new JButton("Print");
+
+                reset.setFocusable(false);
+                buyinv.setFocusable(false);
+
+                // Styling the Buttons
+                reset.setBackground(new Color(0xc700ff));
+                reset.setForeground(new Color(0xffffff));
+                buyinv.setBackground(new Color(0xc700ff));
+                buyinv.setForeground(new Color(0xffffff));
+                reset.setFont(new Font("Arial", Font.BOLD, 30));
+                buyinv.setFont(new Font("Arial", Font.BOLD, 30));
+                reset.setPreferredSize(new Dimension(140, 50));
+                btns.add(reset);
+                buyinv.setPreferredSize(new Dimension(140, 50));
+                btns.add(buyinv);
+
+                actionpanel.add(inputs);
+                actionpanel.add(btns);
+
+                // Panel for displaying the results
+                JPanel msgpanel = new JPanel();
+                msgpanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                msgpanel.setBackground(new Color(0xffffff));
+                msgpanel.setBounds(40, 80, 200, 200);
+
+                JLabel gainh = new JLabel("Messages : ");
+                gainh.setFont(new Font("Sans-Serif", Font.BOLD, 20));
+                gainh.setForeground(new Color(0xc700ff));
+                Border gaint = new EmptyBorder(10, 10, 10, 10);
+                gainh.setBorder(gaint);
+
+                // Initialising the Display textarea
+                JTextArea display = new JTextArea(5, 30);
+                display.setFont(new Font("Arial", Font.BOLD, 20));
+                display.setLineWrap(true);
+                display.setWrapStyleWord(true);
+
+                Border displayborder = new EmptyBorder(25, 25, 25, 25);
+                display.setBorder(displayborder);
+                JScrollPane scroll = new JScrollPane(display);
+                scroll.setForeground(new Color(0xc700ff));
+                scroll.setOpaque(false);
+                scroll.setBorder(null);
+                display.setEditable(false);
+
+                msgpanel.add(gainh);
+                msgpanel.add(scroll);
+
+                buyinv.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            int counter = 1;
+                            int gcounter = 1;
+                            if (studentmanager.getStudents() != null || studentmanager.getGraduateStudents() != null) {
+                                if (studentmanager.getStudents() != null) {
+                                    for (Students studentval : studentmanager.getStudents()) {
+                                        System.out.println("Data for Student Number " + counter);
+                                        System.out.println(studentval.toString());
+                                        counter++;
+                                    }
+                                } else {
+                                    System.out.println("\nNo Data found for Undergraduate Students\n");
+                                }
+                                if (studentmanager.getGraduateStudents() != null) {
+                                    for (GraduateStudents gradstudval : studentmanager.getGraduateStudents()) {
+                                        System.out.println("Data for Graduate Student Number " + gcounter);
+                                        System.out.println(gradstudval.toString());
+                                        gcounter++;
+                                    }
+                                }
+                            } else {
+                                System.out.println(
+                                        "\nNo Data found for Any Students. Please consider adding some data first.\n");
+                            }
+                        } catch (Exception error) {
+                            String out = "Something Went Wrong, Please Try Again.\n\nPlease make sure that\n1)You have not left Last Name, Year, Program, or Supervisor Name fields Blank\n2)You have entered a Number for Average grade and not a string and it is between 0 and 100 (inclusive) only.\n3)You have entered an Integer Number for Year and not a string.";
+                            display.setText(out);
+                            display.setEditable(false);
+                        }
+                    }
+                });
+
+                reset.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        display.setText("");
+                    }
+                });
+
+                // Adding the Panels
+                printinfo.add(actionpanel);
+                printinfo.add(msgpanel);
+                printinfo.setVisible(true);
+
+                home.dispose();
+                enterinfostud.dispose();
+                enterinfogradstud.dispose();
                 printavg.dispose();
                 inputfile.dispose();
                 outputfile.dispose();
